@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<configuration-properties doc:name="Configuration properties:secure" doc:id="ac6a0bf0-d062-4019-86bf-fe7706ea8b68" file="properties\secure\sample-${mule.env}-config.properties" />
+	<global-property doc:name="Global Property:mule.env" doc:id="3c7c6d28-68ec-45f8-a7c2-215ae6d5f0cb" name="mule.env" value="dev" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="9cc40ec6-63cb-49c9-b953-80c39e762a57" file="properties\secure\sample-${mule.env}-config.properties" key="${mule.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<global-property doc:name="Global Property:mule.key" doc:id="421b2223-735f-447e-b313-d5b92906ae08" name="mule.key" value="sujal" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c1694a76-7899-4be6-a5de-45b65b556297" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="37c638c7-5159-401d-b6cf-aec5ad2db52f" basePath="${smapOne.path}">
+		<http:request-connection protocol="HTTPS" host="${smapOne.host}" />
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="eaf9fc04-18b0-4cbc-a70a-059a477e8ae8" file="properties\sample-${mule.env}-config.yaml" />
+	<file:config name="File_Config" doc:name="File Config" doc:id="6c859eba-07a7-4b3b-8744-c68a7094bc11" >
+		<file:connection workingDir="${file.path}" />
+	</file:config>
+</mule>

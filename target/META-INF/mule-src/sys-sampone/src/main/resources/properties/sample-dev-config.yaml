@@ -1,0 +1,21 @@
+#Listener data
+http:
+  port: "8081"
+  path: "/sys"
+  
+#REST Service data
+smapOne:
+  host: "platform.smapone.com"
+  path: "/Backend/v1/Smaps"
+  
+#URL through which we get the url
+Smaps:
+  #Basepath: "/Versions/Current/Data"
+  path: "/Versions/Current/Data"
+  markAsExported: "false"
+
+#FILE Configuration
+file:
+  path: "C:\\Users\\Sujal Anand\\Desktop\\E.ON\\files"
+  
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="gettingDataFlow" doc:id="cd089330-27ca-40b4-9b58-2873032d4978" >
+		<batch:job jobName="processing_Image" doc:id="f70eb158-8304-46b6-bba9-59a62c8e5401" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="e7741a1c-4494-480f-9240-63f3625b3969" >
+					<set-variable value="#[payload.File_Name]" doc:name="Set Variable" doc:id="c2f950e8-6afe-41e5-a7cf-0303a67ea4b1" variableName="Image_Name"/>
+					<http:request method="GET" doc:name="Request" doc:id="a27ae64e-578f-4f04-93d2-722ebd2f53cf" url="#[payload.URL_Hit]">
+						<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"accessToken" : "${secure::smapOne.token}"
+}]]]></http:query-params>
+					</http:request>
+					<logger level="INFO" doc:name="Logger" doc:id="39dd62c3-3251-46f5-b3d4-bd2557327966" message="#[payload]"/>
+					<file:write doc:name="Write" doc:id="adff78ec-b5ad-4de9-9c94-55394cc9faa1" path="#[vars.Image_Name]" config-ref="File_Config"/>
+					<logger level="INFO" doc:name="Logger" doc:id="bd4cbf47-5ac5-4fc6-a609-709bdd9e817f" message="#[payload]"/>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="e031c372-22a9-4a44-bd10-ce46c45e11af" message="completed Batch"/>
+			</batch:on-complete>
+		</batch:job>
+		<ee:transform doc:name="Transform Message" doc:id="f0c0516d-bd27-4b87-a19e-e538b4fa2755" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2f060ebe-036c-45ee-b21b-acefd7a6a0e1" message="#[payload]"/>
+	</flow>
+</mule>

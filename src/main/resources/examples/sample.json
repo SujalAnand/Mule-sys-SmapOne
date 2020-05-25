@@ -1,0 +1,71 @@
+[
+    {
+        "schemaVersion": 2,
+        "id": "86d38d71-e125-46c0-885e-993422beea8e",
+        "recordType": "Record",
+        "subscriptionId": "e01f1b26-709a-40f2-9d4e-ff1497ef04c7",
+        "smapId": "38007fd7-66c5-4605-b75b-26c78cb35645",
+        "smapVersionId": "e601f194-a247-4248-a5a1-fa7bfe3b24d6",
+        "version": "3.4",
+        "tokenId": "5c2431bf-7393-409f-99c1-52a2eabdf9b8",
+        "userId": "05f698e1-1500-45ce-8a2e-a641a9edabfc",
+        "userEmail": "henry.bark@dxc.com",
+        "userName": "Henry Bark",
+        "sendDate": "2019-09-27T14:12:17.4817331Z",
+        "receivedDate": "2019-09-27T14:12:17.8658583Z",
+        "completedDate": "2019-09-27T14:12:18.6361032Z",
+        "deletedDate": null,
+        "lastExportDate": "2020-03-04T08:44:04.4195347Z",
+        "toCompleteOn": null,
+        "title": "PLC Ein- / Au 27.09 16:12",
+        "data": {
+            "Ortsnetz": {
+                "Postleitzahl": 91275,
+                "Ort": "AUERBACH I.D.OPF.",
+                "Ortsteil": "LEHNERSHOF",
+                "Technischer_Platz": "ON06760-PL"
+            },
+            "Auftragsnummer": "12345",
+            "Aktion": "Einbau",
+            "opt_KVS_TH": "Einbau in Kabelverteilerschrank (KVS)",
+            "KVS_Nummer": "12345",
+            "TH_Nummer": null,
+            "Checkbox": true,
+            "PLC_Geratetyp": "PLC-Head-End",
+            "opt_SN_Router": null,
+            "SN_Router_liste": null,
+            "opt_SN_Scan_man": null,
+            "SN_Router_scan": null,
+            "SN_Router_manuell": null,
+            "opt_SN_HeadEnd": "Erfassung bei fehlgeschlagener Prüfung",
+            "SN_HeadEnd_liste": null,
+            "SN_HeadEnd_scan": null,
+            "SN_HeadEnd_manuell": "12345",
+            "opt_SN_Repeater": null,
+            "SN_Repeater_liste": null,
+            "SN_Repeater_scan": null,
+            "SN_Repeater_manuell": null,
+            "NS_Verteilung": {
+                "Werteliste": "1"
+            },
+            "RepeatGroup_Einkopplung": null,
+            "Montagedatum": "2019-09-27",
+            "RepeatGroup_Doku": [
+                {
+                    "Photo": {
+                        "fileId": "01fb4d08-2e7c-4b16-8b0b-eaf7195d64e2",
+                        "fileName": "Photo_2019_09_27_14_12_03.jpg",
+                        "timestamp": "2019-09-27T14:12:03.2430754Z",
+                        "checkSum": "a3b2fcecb9324e7768ef0774d9788837",
+                        "contentType": "image/jpeg",
+                        "size": 11081,
+                        "meta": {
+                            "audioDuration": null
+                        },
+                        "url": "https://platform.smapone.com/Backend/intern/Smaps/38007fd7-66c5-4605-b75b-26c78cb35645/Versions/3.4/Data/86d38d71-e125-46c0-885e-993422beea8e/files/01fb4d08-2e7c-4b16-8b0b-eaf7195d64e2"
+                    }
+                }
+            ]
+        }
+    }
+]
