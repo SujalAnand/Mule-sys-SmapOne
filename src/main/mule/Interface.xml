@@ -33,16 +33,48 @@ payload map (item,index)->{
 output application/java
 ---
 {
-	url : []
-}]]></ee:set-variable>
+	data : []
+} ]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="c3b83370-f44e-4465-991d-02b55fd71cd9" name="gettingURL" />
 		<logger level="INFO" doc:name="Logger" doc:id="e7384fa2-c397-41e4-8038-99b8c0a9eea8" message="#[payload]" />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="cbcf0def-6912-4d9e-a32b-15652c9ace54" when="#[error.errorType.namespace == 'HTTP']">
+				<ee:transform doc:name="Transform Message" doc:id="f2110ae3-1ae3-4d87-bc23-83d2709719e0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error" : error.description,
+	"Description" : "Some Error while sending request to first url"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="e150173e-25a1-449b-9212-fb536b894f0b" message="#[payload]"/>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="20f6c29f-72ba-4cf4-8f00-b3878219e076" type="MULE:EXPRESSION">
+				<ee:transform doc:name="Transform Message" doc:id="03720a06-ab82-4bc7-86ed-13cb6ee0df05" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error" : error.description,
+	"Description" : "Some error in mule expression"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="d3acaeb9-5acd-417e-84bf-957fe1fc15e7" message="#[payload]"/>
+			</on-error-propagate>
+		</error-handler>
 	</flow>
 	<flow name="gettingURL" doc:id="4a504321-dd1a-4ded-ae22-16974f075f28">
 		<foreach doc:name="For Each" doc:id="71c1a589-99b0-4700-80de-136c0be1d8dc">
-			<http:request method="GET" doc:name="Request" doc:id="05f40d51-16b8-4d6a-9bad-7309a8d487d1" config-ref="HTTP_Request_configuration" path='#[payload.smapId ++ "${Smaps.path}"]'>
+			<try doc:name="Try" doc:id="f9cfb75d-0b84-420f-9861-3219adf5945b" >
+				<set-variable value="#[payload.smapId]" doc:name="Set Variable" doc:id="03bad087-6994-4d20-8041-a30a593ec4d5" variableName="SmapId" />
+				<http:request method="GET" doc:name="Request" doc:id="05f40d51-16b8-4d6a-9bad-7309a8d487d1" config-ref="HTTP_Request_configuration" path='#[vars.SmapId ++ "${Smaps.path}"]'>
 				<http:query-params><![CDATA[#[output application/java
 ---
 {
@@ -50,25 +82,56 @@ output application/java
 	"accessToken" : "${secure::smapOne.token}"
 }]]]></http:query-params>
 			</http:request>
-			<logger level="INFO" doc:name="Logger" doc:id="12ce5c72-e176-4c2e-9b8a-af0dea30f34f" message="#[payload[0].data.RepeatGroup_Doku[0].Photo.url]" />
-			<set-variable value='#[%dw 2.0
+				<logger level="INFO" doc:name="Logger" doc:id="12ce5c72-e176-4c2e-9b8a-af0dea30f34f" message="#[payload[0].data.RepeatGroup_Doku[0].Photo.url]" />
+				<set-variable value='#[%dw 2.0
 output application/json
 ---
 {
 	"URL_Hit" : payload[0].data.RepeatGroup_Doku[0].Photo.url,
-	"File_Name" : payload[0].data.RepeatGroup_Doku[0].Photo.fileName
-}]' doc:name="Set Variable" doc:id="09a3152c-98ce-41da-86cf-735912c4bed0" variableName="Url_List" />
-			<flow-ref doc:name="Flow Reference" doc:id="a3a17751-3071-43f3-a30f-944bf71a68b9" name="FilteringOutEmptyArray" />
+	"File_Name" : payload[0].data.RepeatGroup_Doku[0].Photo.fileName,
+	"smapId" : vars.SmapId
+}]' doc:name="Set Variable" doc:id="09a3152c-98ce-41da-86cf-735912c4bed0" variableName="FileNameAndSmapId" />
+				<flow-ref doc:name="Flow Reference" doc:id="a3a17751-3071-43f3-a30f-944bf71a68b9" name="FilteringOutEmptyArray" />
+				<flow-ref doc:name="Flow Reference" doc:id="78d953b9-dd8e-4c56-98e4-09997b3625b7" name="SettingListVariableForFinalPayload" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d42693c8-6d85-45ed-8e68-0f687f936023" when="#[error.errorType.namespace == 'HTTP']">
+						<ee:transform doc:name="Transform Message" doc:id="0ddadeb5-26c0-40a6-b0a5-0f7b3a02609b">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error" : error.description,
+	"Description" : "some error while sending request"
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="7f6e9d51-9d16-414d-a06f-8b84ddd95dd3" message="#[payload]" />
+					</on-error-continue>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a09ff526-fd0d-4758-bf75-e7ebf7f1ec00" when="MULE:EXPRESSION">
+						<ee:transform doc:name="Transform Message" doc:id="4615864c-72af-444c-9eb3-8f52146c2e64" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error" : error.description,
+	"Description" : "Some error in mule expression"
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</on-error-continue>
+				</error-handler>
+			</try>
 		</foreach>
 		<logger level="INFO" doc:name="Logger" doc:id="fa971f3f-5006-449f-881e-c01dd5af24b9" message="#[vars.list.url]" />
-		<set-payload value="#[vars.list.url]" doc:name="Set Payload" doc:id="16f9960c-4bcb-4259-a1bf-1690507d21e3" />
-		<flow-ref doc:name="Flow Reference" doc:id="8efdc2a3-5523-4fde-824c-490a08cbe177" name="gettingDataFlow" />
+		<set-payload value="#[vars.list.data]" doc:name="Set Payload" doc:id="16f9960c-4bcb-4259-a1bf-1690507d21e3" />
 		<logger level="INFO" doc:name="Logger" doc:id="d9514d47-09c9-40ae-9293-8da8d700aed1" message="#[payload]" />
 	</flow>
-	<sub-flow name="FilteringOutEmptyArray" doc:id="c6a2815d-8c51-48cb-b3d3-8cdc43608c37" >
-		<choice doc:name="Choice" doc:id="eb0935a3-8e86-42c4-a3fe-dff98b39e240">
-				<when expression="#[not isEmpty(vars.Url_List.URL_Hit)]">
-					<ee:transform doc:name="Transform Message" doc:id="05939c2b-d1a7-41e0-99b4-3aee2d4d7689">
+	<sub-flow name="SettingListVariableForFinalPayload" doc:id="8bd454ac-3850-4e4c-a98c-d23330f3d05e" >
+		<choice doc:name="Choice" doc:id="afb61b4f-64a2-49f4-b6be-9a3c090dac27">
+			<when expression="#[not isEmpty(vars.FileNameAndSmapId.URL_Hit)]">
+				<ee:transform doc:name="Transform Message" doc:id="05939c2b-d1a7-41e0-99b4-3aee2d4d7689">
 				<ee:message>
 				</ee:message>
 						<ee:variables>
@@ -76,14 +139,48 @@ output application/json
 output application/json
 ---
 {
-	url : (vars.list.url as Array) + vars.Url_List
+	data : (vars.list.data as Array) + vars.SystemData
 }]]></ee:set-variable>
 						</ee:variables>
 			</ee:transform>
-				</when>
-				<otherwise>
-					<logger level="INFO" doc:name="Logger" doc:id="e4bd11a5-cfe1-4acb-9fb3-27fcfff9bfef" message="#[payload]" />
-				</otherwise>
-			</choice>
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="a469ba01-a49c-484c-a9e7-b1c312d8ac5f" message="#[payload]" />
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="FilteringOutEmptyArray" doc:id="442c6739-d39f-4efa-b1dd-72da685fa6d6" >
+		<choice doc:name="FilteringOutEmptyArray" doc:id="005c10b9-b0e1-41a0-be7b-7674aa99960b">
+			<when expression="#[not isEmpty(vars.FileNameAndSmapId.URL_Hit)]">
+				<http:request method="GET" doc:name="Request" doc:id="f110fb0c-007d-41e2-92a0-031cd64d112f" url="#[vars.FileNameAndSmapId.URL_Hit]">
+					<http:query-params><![CDATA[#[output application/java
+---
+{
+	"accessToken" : "${secure::smapOne.token}"
+}]]]></http:query-params>
+				</http:request>
+				<ee:transform doc:name="Transform Message" doc:id="59b2a16c-08ee-4af3-8e5b-9d3c1d00f3fd">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+import dw::Crypto
+import toBase64 from dw::core::Binaries
+output application/json
+---
+toBase64(payload)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value='#[%dw 2.0
+output application/json
+---
+{
+	"Image_Name" : vars.FileNameAndSmapId.File_Name,
+	"SmapId" : vars.FileNameAndSmapId.smapId,
+	"Image" : payload
+}]' doc:name="Set Variable" doc:id="254f8834-7d57-4886-9aa6-5e9ef5049176" variableName="SystemData" />
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="cd4eaeb2-2f33-4042-9e52-7a74881eb33a" message="#[payload]" />
+			</otherwise>
+		</choice>
 	</sub-flow>
 </mule>
