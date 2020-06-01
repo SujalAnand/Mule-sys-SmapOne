@@ -89,7 +89,8 @@ output application/json
 {
 	"URL_Hit" : payload[0].data.RepeatGroup_Doku[0].Photo.url,
 	"File_Name" : payload[0].data.RepeatGroup_Doku[0].Photo.fileName,
-	"smapId" : vars.SmapId
+	"smapId" : vars.SmapId,
+	"data" : payload
 }]' doc:name="Set Variable" doc:id="09a3152c-98ce-41da-86cf-735912c4bed0" variableName="FileNameAndSmapId" />
 				<flow-ref doc:name="Flow Reference" doc:id="a3a17751-3071-43f3-a30f-944bf71a68b9" name="FilteringOutEmptyArray" />
 				<flow-ref doc:name="Flow Reference" doc:id="78d953b9-dd8e-4c56-98e4-09997b3625b7" name="SettingListVariableForFinalPayload" />
@@ -175,7 +176,8 @@ output application/json
 {
 	"Image_Name" : vars.FileNameAndSmapId.File_Name,
 	"SmapId" : vars.FileNameAndSmapId.smapId,
-	"Image" : payload
+	"Image" : payload,
+	"data" : vars.FileNameAndSmapId.data
 }]' doc:name="Set Variable" doc:id="254f8834-7d57-4886-9aa6-5e9ef5049176" variableName="SystemData" />
 			</when>
 			<otherwise>
